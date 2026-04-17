@@ -25,6 +25,7 @@ export default function ProviderLogin({ onLogin, onBack }: ProviderLoginProps) {
 
   // Sign up
   const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [signupPhone, setSignupPhone] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
   const [city, setCity] = useState('');
@@ -44,19 +45,26 @@ export default function ProviderLogin({ onLogin, onBack }: ProviderLoginProps) {
       toast.success('Welcome back, Provider!');
       onLogin();
     } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : 'Sign in failed');
+      const errorMsg = err instanceof Error ? err.message : 'Sign in failed';
+      if (errorMsg.includes('Invalid login')) {
+        toast.error('Phone number or password is incorrect');
+      } else if (errorMsg.includes('Email not confirmed')) {
+        toast.error('Please confirm your email before logging in');
+      } else {
+        toast.error(errorMsg);
+      }
     } finally { setIsLoading(false); }
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !signupPhone || !signupPassword || !city || !county || !businessName || !category) {
+    if (!name || !email || !signupPhone || !signupPassword || !city || !county || !businessName || !category) {
       toast.error('Please fill in all required fields'); return;
     }
     setIsLoading(true);
     try {
       await signUpProvider({
-        name, phone: signupPhone, password: signupPassword, city, county,
+        name, email, phone: signupPhone, password: signupPassword, city, county,
         businessName, category, description,
         subServices: [], counties: [county],
         basePrice: parseFloat(basePrice) || 0,
@@ -144,6 +152,11 @@ export default function ProviderLogin({ onLogin, onBack }: ProviderLoginProps) {
                   <Input value={businessName} onChange={(e) => setBusinessName(e.target.value)} placeholder="Your business"
                     className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500" />
                 </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">Email Address *</label>
+                <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com"
+                  className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-2">Phone Number *</label>

@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import './LandingPage.css';
 
 const LandingPage: React.FC = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [activeLang, setActiveLang] = useState('en');
@@ -11,7 +10,6 @@ const LandingPage: React.FC = () => {
   const heroCanvasRef = useRef<HTMLCanvasElement>(null);
   const radarCanvasRef = useRef<HTMLCanvasElement>(null);
   const mapCanvasRef = useRef<HTMLCanvasElement>(null);
-  const mapSvgRef = useRef<SVGSVGElement>(null);
 
   // --- Hero Animation ---
   useEffect(() => {
@@ -21,8 +19,8 @@ const LandingPage: React.FC = () => {
     if (!ctx) return;
 
     let time = 0;
-    let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-    let tgt = { ...mouse };
+    const mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+    const tgt = { ...mouse };
 
     let animationFrame: number;
     const waves = [
@@ -56,7 +54,7 @@ const LandingPage: React.FC = () => {
           const inf = Math.max(0, 1 - dist / 320);
           const me = inf * 68 * Math.sin(time * 0.001 + x * 0.01 + w.offset);
           const y = canvas.height / 2 + Math.sin(x * w.frequency + time * 0.02 + w.offset) * w.amplitude + me;
-          x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+          if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         }
         ctx.lineWidth = 2.5; ctx.strokeStyle = w.color; ctx.globalAlpha = w.opacity;
         ctx.stroke(); ctx.restore();
@@ -84,7 +82,6 @@ const LandingPage: React.FC = () => {
     if (!ctx) return;
 
     let sweepAngle = 0;
-    let currentClosest: string | null = null;
     let animationFrame: number;
 
     const draw = () => {
@@ -111,7 +108,7 @@ const LandingPage: React.FC = () => {
 
       // Highlight closest logic
       const norm = (a: number) => ((a % (Math.PI * 2)) + (Math.PI * 2)) % (Math.PI * 2);
-      let best = 0.14;
+      const best = 0.14;
       categories.forEach(cat => {
         const angle = Math.atan2(parseFloat(cat.top) - 50, parseFloat(cat.left) - 50);
         const diff = Math.min(Math.abs(norm(sweepAngle) - norm(angle)), (Math.PI * 2) - Math.abs(norm(sweepAngle) - norm(angle)));
@@ -139,7 +136,8 @@ const LandingPage: React.FC = () => {
       window.removeEventListener('resize', resize);
       cancelAnimationFrame(animationFrame);
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCategory]);
 
   // --- World Map Animation ---
   useEffect(() => {
@@ -186,15 +184,6 @@ const LandingPage: React.FC = () => {
     { id: 'hotel', icon: '🏨', name: 'Hotels', top: '30%', left: '10%' },
     { id: 'repair', icon: '🔧', name: 'Repair', top: '30%', left: '90%' },
   ];
-
-  const categoryTitles: Record<string, string> = {
-    barbershop: 'Barbershop Services',
-    beauty: 'Beauty Salon Services',
-    hospital: 'Medical Facilities',
-    bank: 'Financial Services',
-    government: 'Government Offices',
-    transport: 'Transport & Logistics'
-  };
 
   return (
     <div className="landing-container">

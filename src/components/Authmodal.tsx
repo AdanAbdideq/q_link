@@ -150,7 +150,7 @@ export default function AuthModal({ onClose }: AuthModalProps) {
   };
 
   const btn = (variant: "primary"|"secondary"|"google"): React.CSSProperties => ({
-    width: "100%", padding: "11px", borderRadius: 10, border: "none",
+    width: "100%", padding: "11px", borderRadius: 10,
     background: variant === "primary" ? dark.accent
                : variant === "google" ? "#ffffff"
                : "transparent",
@@ -192,16 +192,14 @@ export default function AuthModal({ onClose }: AuthModalProps) {
         </div>
 
         {/* Role toggle (register only) */}
-        {mode === "register" && (
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
-            {(["customer","provider"] as Role[]).map(r => (
-              <button key={r} onClick={() => setRole(r)}
-                style={{ padding:10, borderRadius:10, border: role===r ? `2px solid ${dark.accent}` : `1px solid ${dark.border}`, background: role===r ? "rgba(14,165,233,0.15)" : "transparent", color: dark.text, cursor:"pointer", fontSize:13, fontWeight:600 }}>
-                {r === "customer" ? "👤 Customer" : "💼 Provider"}
-              </button>
-            ))}
-          </div>
-        )}
+        <div style={{ display: mode === "register" ? "grid" : "none", gridTemplateColumns:"1fr 1fr", gap:8 }}>
+          {(["customer","provider"] as Role[]).map(r => (
+            <button key={r} onClick={() => setRole(r)}
+              style={{ padding:10, borderRadius:10, border: role===r ? `2px solid ${dark.accent}` : `1px solid ${dark.border}`, background: role===r ? "rgba(14,165,233,0.15)" : "transparent", color: dark.text, cursor:"pointer", fontSize:13, fontWeight:600 }}>
+              {r === "customer" ? "👤 Customer" : "💼 Provider"}
+            </button>
+          ))}
+        </div>
 
         {/* Google button */}
         <button onClick={handleGoogle} disabled={googleLoading} style={btn("google")}>
@@ -223,44 +221,42 @@ export default function AuthModal({ onClose }: AuthModalProps) {
         </div>
 
         {/* Avatar picker (register only) */}
-        {mode === "register" && (
-          <div style={{ display:"flex", alignItems:"center", gap:12 }}>
-            <div onClick={() => fileInputRef.current?.click()}
-              style={{ width:56, height:56, borderRadius:"50%", border:`2px dashed ${dark.border}`, background:dark.surface, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", overflow:"hidden", flexShrink:0 }}>
-              {avatarPreview
-                ? <img src={avatarPreview} alt="avatar" style={{ width:"100%", height:"100%", objectFit:"cover" }} />
-                : <span style={{ fontSize:22 }}>📷</span>
-              }
-            </div>
-            <div>
-              <div style={{ fontSize:13, fontWeight:600, color:dark.text }}>Profile photo</div>
-              <button onClick={() => fileInputRef.current?.click()} style={{ background:"none", border:"none", color:dark.accent, fontSize:12, cursor:"pointer", padding:0 }}>
-                {avatarPreview ? "Change photo" : "Upload photo (optional)"}
-              </button>
-              <div style={{ fontSize:11, color:dark.muted }}>Max 3 MB · JPG or PNG</div>
-            </div>
-            <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" style={{ display:"none" }} onChange={handleAvatarChange} />
+        <div style={{ display: mode === "register" ? "flex" : "none", alignItems:"center", gap:12 }}>
+          <div onClick={() => fileInputRef.current?.click()}
+            style={{ width:56, height:56, borderRadius:"50%", border:`2px dashed ${dark.border}`, background:dark.surface, display:"flex", alignItems:"center", justifyContent:"center", cursor:"pointer", overflow:"hidden", flexShrink:0 }}>
+            {avatarPreview
+              ? <img src={avatarPreview} alt="avatar" style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+              : <span style={{ fontSize:22 }}>📷</span>
+            }
           </div>
-        )}
+          <div>
+            <div style={{ fontSize:13, fontWeight:600, color:dark.text }}>Profile photo</div>
+            <button onClick={() => fileInputRef.current?.click()} style={{ background:"none", border:"none", color:dark.accent, fontSize:12, cursor:"pointer", padding:0 }}>
+              {avatarPreview ? "Change photo" : "Upload photo (optional)"}
+            </button>
+            <div style={{ fontSize:11, color:dark.muted }}>Max 3 MB · JPG or PNG</div>
+          </div>
+          <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" style={{ display:"none" }} onChange={handleAvatarChange} />
+        </div>
 
-        {/* Form fields */}
-        {mode === "register" && (
+        {/* Form fields - Always render but show/hide based on mode */}
+        <div style={{ display: mode === "register" ? "block" : "none" }}>
           <input name="name" placeholder="Full name *" value={form.name} onChange={handleChange} style={inp} />
-        )}
+        </div>
         <input name="email" type="email" placeholder="Email address *" value={form.email} onChange={handleChange} style={inp} />
-        {mode === "register" && (
+        <div style={{ display: mode === "register" ? "block" : "none" }}>
           <input name="phone" type="tel" placeholder="Phone number (optional)" value={form.phone} onChange={handleChange} style={inp} />
-        )}
+        </div>
         <input name="password" type="password" placeholder={`Password${mode==="register" ? " (min. 8 characters) *" : " *"}`} value={form.password} onChange={handleChange}
           onKeyDown={e => e.key === "Enter" && handleSubmit()}
           style={inp} />
-        {mode === "register" && (
+        <div style={{ display: mode === "register" ? "block" : "none" }}>
           <select name="country" value={form.country} onChange={handleChange}
             style={{ ...inp, color: form.country ? dark.text : dark.muted }}>
             <option value="">Select your country *</option>
             {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
-        )}
+        </div>
 
         {/* Feedback */}
         {error   && <div style={{ background:"#fef2f2", color:"#dc2626", padding:"10px 12px", borderRadius:8, fontSize:13, border:"1px solid #fecaca" }}>{error}</div>}

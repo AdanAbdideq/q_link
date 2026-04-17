@@ -17,6 +17,7 @@ export default function CustomerLogin({ onLogin, onBack }: CustomerLoginProps) {
   const { signInWithPhone, signUpCustomer } = useAuth();
   const [mode, setMode] = useState<Mode>('signin');
   const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -34,18 +35,25 @@ export default function CustomerLogin({ onLogin, onBack }: CustomerLoginProps) {
       toast.success('Welcome back!');
       onLogin();
     } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : 'Sign in failed');
+      const errorMsg = err instanceof Error ? err.message : 'Sign in failed';
+      if (errorMsg.includes('Invalid login')) {
+        toast.error('Phone number or password is incorrect');
+      } else if (errorMsg.includes('Email not confirmed')) {
+        toast.error('Please confirm your email before logging in');
+      } else {
+        toast.error(errorMsg);
+      }
     } finally { setIsLoading(false); }
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !phone || !password || !city || !county) { toast.error('Please fill in all fields'); return; }
+    if (!name || !email || !phone || !password || !city || !county) { toast.error('Please fill in all fields'); return; }
     if (password !== confirmPassword) { toast.error('Passwords do not match'); return; }
     if (password.length < 8) { toast.error('Password must be at least 8 characters'); return; }
     setIsLoading(true);
     try {
-      await signUpCustomer({ name, phone, password, city, county });
+      await signUpCustomer({ name, email, phone, password, city, county });
       toast.success('Account created! You can now sign in.');
       setMode('signin');
     } catch (err: unknown) {
@@ -120,6 +128,11 @@ export default function CustomerLogin({ onLogin, onBack }: CustomerLoginProps) {
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-2">Full Name</label>
                 <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="John Kamau"
+                  className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">Email Address</label>
+                <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="john@example.com"
                   className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500" />
               </div>
               <div>

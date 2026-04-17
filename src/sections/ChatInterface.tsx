@@ -18,17 +18,17 @@ export default function ChatInterface({
   providerName,
   onBack,
 }: ChatInterfaceProps) {
+  const initialTimestamp = new Date(new Date().getTime() - 5 * 60000);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "1",
       sender: "provider",
       text: `Hi! I'm interested in helping you with ${serviceName}. How can I assist you today?`,
-      timestamp: new Date(Date.now() - 5 * 60000),
+      timestamp: initialTimestamp,
     },
   ]);
   const [inputValue, setInputValue] = useState("");
 
-  const isDark = true;
   const bgColor = "#0f172a";
   const cardBg = "#1e293b";
   const textColor = "#e2e8f0";

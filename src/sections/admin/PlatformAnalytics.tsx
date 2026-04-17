@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { ArrowLeft, Users, Calendar, DollarSign, BarChart3, MapPin, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { usePlatformAnalytics, useServiceCategories } from '@/hooks/useSupabase';
 
 interface PlatformAnalyticsProps {

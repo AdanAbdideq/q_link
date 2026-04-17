@@ -1,10 +1,11 @@
 import { Briefcase, Calendar, DollarSign, LogOut, Bell, Settings, QrCode, TrendingUp, CheckCircle } from 'lucide-react';
 import { useMyProviderProfile, useProviderBookings } from '@/hooks/useSupabase';
 import { useAuth } from '@/context/AuthContext';
+import type { AnyView } from '@/store/appStore';
 
 interface ProviderDashboardProps {
   onLogout: () => void;
-  onNavigate: (view: string) => void;
+  onNavigate: (view: AnyView) => void;
 }
 
 export default function ProviderDashboard({ onLogout, onNavigate }: ProviderDashboardProps) {
@@ -119,7 +120,7 @@ export default function ProviderDashboard({ onLogout, onNavigate }: ProviderDash
                 { label: 'Scan QR', view: 'scanner', icon: QrCode, color: 'from-violet-500 to-purple-500' },
                 { label: 'Earnings', view: 'bookings', icon: DollarSign, color: 'from-amber-500 to-orange-500' },
               ].map((item) => (
-                <button key={item.label} onClick={() => onNavigate(item.view)}
+                <button key={item.label} onClick={() => onNavigate(item.view as AnyView)}
                   className="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 hover:border-slate-600 transition-all text-left">
                   <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${item.color} flex items-center justify-center mb-3`}>
                     <item.icon className="w-5 h-5 text-white" />

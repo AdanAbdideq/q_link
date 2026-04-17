@@ -9,7 +9,6 @@ interface LegalPagesProps {
 export default function LegalPages({ onBack }: LegalPagesProps) {
   const [currentPage, setCurrentPage] = useState<LegalPageType>(null);
 
-  const isDark = true;
   const bgColor = "#0f172a";
   const cardBg = "#1e293b";
   const textColor = "#e2e8f0";

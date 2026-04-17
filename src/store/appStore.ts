@@ -1,8 +1,8 @@
 import { create } from "zustand";
 
-type AnyView = "dashboard" | "services" | "providers" | "booking" | "bookings" | "scanner" | "approvals" | "users" | "announcements" | "analytics";
+export type AnyView = "dashboard" | "services" | "providers" | "booking" | "bookings" | "scanner" | "approvals" | "users" | "announcements" | "analytics";
 
-interface AppState {
+export interface AppState {
   currentView: AnyView;
   selectedServiceId: string | null;
   selectedProviderId: string | null;

@@ -1,10 +1,11 @@
 import { Users, Briefcase, Calendar, BarChart3, Megaphone, CheckCircle, LogOut, Bell, Search, TrendingUp } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { usePlatformAnalytics } from '@/hooks/useSupabase';
+import type { AnyView } from '@/store/appStore';
 
 interface AdminDashboardProps {
   onLogout: () => void;
-  onNavigate: (view: string) => void;
+  onNavigate: (view: AnyView) => void;
 }
 
 export default function AdminDashboard({ onLogout, onNavigate }: AdminDashboardProps) {
@@ -104,7 +105,7 @@ export default function AdminDashboard({ onLogout, onNavigate }: AdminDashboardP
           <h2 className="text-xl font-semibold text-white mb-4">Management</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {quickActions.map((action) => (
-              <button key={action.id} onClick={() => onNavigate(action.id)}
+              <button key={action.id} onClick={() => onNavigate(action.id as AnyView)}
                 className="relative p-5 rounded-2xl bg-slate-800/50 border border-slate-700/50 hover:border-slate-600 transition-all text-left group hover:bg-slate-800">
                 {action.count !== null && action.count !== undefined && action.count > 0 && (
                   <span className="absolute top-4 right-4 px-2 py-0.5 rounded-full bg-pink-500 text-white text-xs font-bold">

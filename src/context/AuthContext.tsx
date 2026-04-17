@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
@@ -106,6 +107,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
     });
     if (error) throw error;
+
+    // Create profile record in profiles table
+    if (data.user) {
+      const { error: profileError } = await supabase.from('profiles').insert({
+        id: data.user.id,
+        name: d.name,
+        email: d.email,
+        phone: d.phone ?? null,
+        role: 'customer',
+        city: d.city,
+        county: d.county,
+        avatar_url: null,
+        created_at: new Date().toISOString(),
+      });
+      if (profileError) {
+        console.warn('Profile creation failed:', profileError.message);
+        // Don't throw - auth user was created, profile can be created later
+      }
+    }
     return data.user;
   };
 
@@ -127,6 +147,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw error;
 
     if (data.user) {
+      // Create profile record
+      const { error: profileError } = await supabase.from('profiles').insert({
+        id: data.user.id,
+        name: d.name,
+        email: d.email,
+        phone: d.phone ?? null,
+        role: 'provider',
+        city: d.city,
+        county: d.county,
+        avatar_url: null,
+        created_at: new Date().toISOString(),
+      });
+      if (profileError) {
+        console.warn('Profile creation failed:', profileError.message);
+      }
+
+      // Create service provider record
       const { error: pe } = await supabase.from('service_providers').insert({
         user_id: data.user.id,
         business_name: d.businessName,
@@ -140,7 +177,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         is_verified: false,
         is_approved: false,
       });
-      if (pe) throw pe;
+      if (pe) {
+        console.warn('Service provider creation failed:', pe.message);
+      }
     }
     return data.user;
   };
@@ -148,7 +187,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // ── Sign in with email (primary) ──────────────────────────────────────────
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
+    if (error) {
+      if (error.message.includes('Invalid login credentials')) {
+        throw new Error('Email or password is incorrect');
+      }
+      if (error.message.includes('Email not confirmed')) {
+        throw new Error('Please confirm your email before logging in');
+      }
+      throw new Error(error.message || 'Sign in failed');
+    }
   };
 
   // ── Sign in with phone (legacy — kept for compatibility) ──────────────────

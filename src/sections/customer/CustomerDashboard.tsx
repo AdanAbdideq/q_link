@@ -2,10 +2,11 @@ import { Search, MapPin, Calendar, Star, LogOut, Bell, User, Briefcase, ChevronR
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/context/AuthContext';
 import { useServiceCategories, useCustomerBookings } from '@/hooks/useSupabase';
+import type { AnyView } from '@/store/appStore';
 
 interface CustomerDashboardProps {
   onLogout: () => void;
-  onNavigate: (view: string) => void;
+  onNavigate: (view: AnyView) => void;
 }
 
 export default function CustomerDashboard({ onLogout, onNavigate }: CustomerDashboardProps) {
