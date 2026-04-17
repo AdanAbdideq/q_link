@@ -4,7 +4,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import { useAppStore } from "./store/appStore";
 
 import LandingPage from "./sections/LandingPage";
-import AuthModal from "./components/AuthModal";
+import AuthModal from "./components/Authmodal";
 
 // dashboards
 import CustomerDashboard from "./sections/customer/CustomerDashboard";
